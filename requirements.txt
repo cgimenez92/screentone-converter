@@ -1,7 +1,9 @@
 numpy
-    pandas
-    scikit-learn
-    matplotlib
-    tensorflow
-    keras
-    xgboost
+pandas
+scikit-learn
+tensorflow
+keras
+xgboost
+opencv-python
+PIL
+matplotlib.pyplot

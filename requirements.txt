@@ -6,4 +6,4 @@ keras
 xgboost
 opencv-python
 PIL
-matplotlib.pyplot
+matplotlib

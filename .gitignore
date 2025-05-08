@@ -178,3 +178,7 @@ cython_debug/
 
 ./images
 ./imagenes/
+.vscode/
+vscode/
+**.vscode/
+

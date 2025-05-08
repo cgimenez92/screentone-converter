@@ -34,7 +34,7 @@ class ColorInspectorApp:
 
         image_bgr = cv2.imread(filename)
         image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-        self.image = Image.fromarray(image_rgb)
+        self.image = image_rgb
 
     def _setup_widgets(self):
         self.tk_image = ImageTk.PhotoImage(self.image)

@@ -18,8 +18,8 @@ class ColorInspectorApp:
         
         image_rgb, *_ = ImageLoader.load()
         self.image = Image.fromarray(image_rgb)
-        self.image_np = np.array(self.image)  # Shape: (H, W, 3)
-        self.font = tkFont.Font(family="Helvetica", size=10)
+        self.image_np = np.array(self.image)
+        self.font = tkFont.Font(family="Helvetica", size=20)
         self.last_pixel: Optional[Tuple[int, int]] = None
 
         self.css3_rgb = {
@@ -43,16 +43,16 @@ class ColorInspectorApp:
 
     def _get_color_name(self, rgb: Tuple[int, int, int]) -> str:
         try:
-            return webcolors.rgb_to_name(rgb)
+            return webcolors.rgb_to_name(rgb).capitalize()
         except ValueError:
             r1, g1, b1 = rgb
             closest_name = min(
-                self.css3_rgb,
-                key=lambda name: (
-                                    (r1 - self.css3_rgb[name][0]) ** 2 +
-                                    (g1 - self.css3_rgb[name][1]) ** 2 +
-                                    (b1 - self.css3_rgb[name][2]) ** 2
-                                )
+                                self.css3_rgb,
+                                key=lambda name: (
+                                                    (r1 - self.css3_rgb[name][0]) ** 2 +
+                                                    (g1 - self.css3_rgb[name][1]) ** 2 +
+                                                    (b1 - self.css3_rgb[name][2]) ** 2
+                                                )
                                 )
             return f"Closest: {closest_name.capitalize()}"
 

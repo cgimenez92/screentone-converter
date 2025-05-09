@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageTk, ImageFont
 import cv2
 import webcolors
 from typing import Tuple, Optional, List
-
+from image_loader import ImageLoader
 
 class ColorInspectorApp:
     def __init__(self, root: tk.Tk):
@@ -15,7 +15,9 @@ class ColorInspectorApp:
         self.tk_image: Optional[ImageTk.PhotoImage] = None
         self.marked_points: List[Tuple[int, int, str]] = []
 
-        self._load_image()
+        image_rgb, *_ = ImageLoader.load()
+        self.image = Image.fromarray(image_rgb)
+
         self._setup_widgets()
 
         # Precompute RGB tuples for faster closest name lookup
@@ -24,8 +26,10 @@ class ColorInspectorApp:
                             for name in webcolors.names()
                         }
 
-    def _load_image(self):
-        self.root.withdraw()
+        """def _load_image(self):
+        image_rgb, *_ = ImageLoader.load()
+        self.image = Image.fromarray(image_rgb) """
+        """self.root.withdraw()
         filename = filedialog.askopenfilename(title="Select Image")
         self.root.deiconify()
 
@@ -33,9 +37,8 @@ class ColorInspectorApp:
             raise FileNotFoundError("No image selected.")
 
         image_bgr = cv2.imread(filename)
-        image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-        self.image = image_rgb
-
+        image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)"""
+        
     def _setup_widgets(self):
         self.tk_image = ImageTk.PhotoImage(self.image)
         self.label = tk.Label(self.root, image=self.tk_image)

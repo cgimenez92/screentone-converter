@@ -1,3 +1,19 @@
+"""
+Module Name: color_inspector.py
+
+Description:
+El modulo contiene la clase ColorInspectorApp, una app Tkinter
+que muestra el color debajo del cursor y su nombre. Permite al usuario seleccionar una imagen
+y ver el color debajo del cursor en tiempo real.
+
+Dependencies:
+- tkinter
+- numpy
+- webcolors
+- PIL (Pillow)
+"""
+
+
 import tkinter as tk
 import tkinter.font as tkFont
 import webcolors

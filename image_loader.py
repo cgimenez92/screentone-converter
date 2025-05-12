@@ -8,5 +8,8 @@ class ImageLoader:
         if not filename:
             raise FileNotFoundError("No image selected.")
         image_bgr = cv2.imread(filename)
+        if image_bgr is None:
+            return None, None
+
         image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
         return image_rgb, filename

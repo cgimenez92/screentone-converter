@@ -1,86 +1,23 @@
-import cv2
-import numpy as np
-from PIL import Image, ImageDraw
-import matplotlib.pyplot as plt
-from tkinter import Tk, filedialog
-import os
-from image_loader import ImageLoader
-from patterns import create_pattern
-from color_ranges import color_ranges
+import tkinter as tk
+from screentone_gui import run_screentone_app 
+from color_inspector_gui import run_color_inspector
 
-class ScreentoneProcessor:
-    def __init__(self, image_shape):
-        height, width = image_shape[:2]
-        pattern_size = max(30, min(width, height) // 10)
-        self.pattern_map = {
-                            'red1': create_pattern('horizontal_stripes', pattern_size),
-                            'red2': create_pattern('vertical_stripes', pattern_size),
-                            'orange': create_pattern('grid', pattern_size),
-                            'yellow': create_pattern('small_dots', pattern_size),
-                            'green': create_pattern('large_dots', pattern_size),
-                            'cyan': create_pattern('double_diagonals', pattern_size),
-                            'blue': create_pattern('diagonal_stripes', pattern_size),
-                            'purple': create_pattern('zigzag', pattern_size),
-                            'pink': create_pattern('waves', pattern_size),
-                            }
+def main_menu():
+    root = tk.Tk()
+    root.title("Menú Principal")
 
-    def apply(self, hsv_image, rgb_image):
-        result_image = np.ones(rgb_image.shape[:2], dtype=np.uint8) * 255
+    def on_close():
+        root.quit()
+        root.destroy()
 
-        for color, (low, high) in color_ranges.items():
-            mask = cv2.inRange(hsv_image, np.array(low), np.array(high))
-            mask = cv2.GaussianBlur(mask, (5, 5), 0)
-            _, mask = cv2.threshold(mask, 50, 255, cv2.THRESH_BINARY)
-            mask = cv2.dilate(mask, np.ones((3, 3), np.uint8), iterations=1)
+    root.protocol("WM_DELETE_WINDOW", on_close)
 
-            tile = np.tile(self.pattern_map[color], (result_image.shape[0] // self.pattern_map[color].shape[0] + 1,
-                                                     result_image.shape[1] // self.pattern_map[color].shape[1] + 1))
-            tile = tile[:result_image.shape[0], :result_image.shape[1]]
+    tk.Label(root, text="Seleccione una opción", font=("Helvetica", 16)).pack(pady=20)
+    tk.Button(root, text="1. Aplicar Screentone", font=("Helvetica", 14), width=30,
+              command=run_screentone_app).pack(pady=10)
+    tk.Button(root, text="Salir", font=("Helvetica", 14), width=30, command=on_close).pack(pady=20)
 
-            result_image = np.where(mask == 255, tile, result_image)
-
-        return cv2.convertScaleAbs(result_image, alpha=1.2, beta=0)
-    
-    def superimpose(self, rgb_image, screentone_gray):
-        screentone_rgb = cv2.cvtColor(screentone_gray, cv2.COLOR_GRAY2RGB)
-        mask = screentone_gray < 100
-        result = rgb_image.copy()
-        result[mask] = screentone_rgb[mask]
-        return result
-
-    def show(self, rgb_image, processed_image, superimposed_image):
-        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 6))
-        ax1.imshow(rgb_image)
-        ax1.set_title('Original Image')
-        ax1.axis('off')
-        ax2.imshow(processed_image, cmap='gray')
-        ax2.set_title('Screentone Result')
-        ax2.axis('off')
-        ax3.imshow(superimposed_image)
-        ax3.set_title("Superimposed")
-        ax3.axis('off')
-        plt.tight_layout()
-        plt.show()
-
-    def save(self, original_image, screentone_image, superimposed_image, original_path):
-        base_name = os.path.splitext(os.path.basename(original_path))[0]
-        folder = os.path.dirname(original_path)
-
-        Image.fromarray(original_image).save(os.path.join(folder, f"{base_name}_original.jpg"))
-        Image.fromarray(screentone_image).save(os.path.join(folder, f"{base_name}_screentone.jpg"))
-        Image.fromarray(superimposed_image).save(os.path.join(folder, f"{base_name}_superimposed.jpg"))
-
-# Main function
-def main():
-    rgb_image, path = ImageLoader.load()
-    hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2HSV)
-    
-    processor = ScreentoneProcessor(rgb_image.shape)
-    processed_image = processor.apply(hsv_image, rgb_image)
-    superimposed_image = processor.superimpose(rgb_image, processed_image)
-
-    processor.show(rgb_image, processed_image, superimposed_image)
-    processor.save(processed_image, path)
+    root.mainloop()
 
 if __name__ == "__main__":
-    main()
+    main_menu()

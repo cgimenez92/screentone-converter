@@ -175,7 +175,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-
+/images
+/imagenes
 ./images
 ./imagenes/
 .vscode/

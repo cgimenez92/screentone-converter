@@ -1,7 +1,13 @@
+"""
+Este módulo gestiona la carga de imágenes mediante un selector de archivos GUI.
+Devuelve la imagen seleccionada en formato RGB junto con la ruta del archivo.
+"""
+
 import cv2
 from tkinter import Tk, filedialog
 
 def load_image():
+    """Ventana de diálogo para seleccionar un archivo e importa la imagen como RGB."""
     Tk().withdraw()
     filename = filedialog.askopenfilename(title="Select Image")
     if not filename:

@@ -1,3 +1,7 @@
+"""
+Herramienta GUI para inspeccionar y nombrar valores RGB de una imagen según la posición del cursor.
+"""
+
 import tkinter as tk
 import tkinter.font as tkFont
 import webcolors

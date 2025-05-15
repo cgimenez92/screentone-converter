@@ -1,3 +1,8 @@
+"""
+Lógica principal para aplicar screentones basada en la detección de color HSV.
+Genera un resultado en escala de grises y lo superpone sobre la imagen original.
+"""
+
 import cv2
 import numpy as np
 from PIL import Image

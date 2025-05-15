@@ -1,3 +1,7 @@
+"""
+Ejecuta el flujo GUI del screentone: carga imagen, aplica patrones, muestra/guarda resultados.
+"""
+
 import cv2
 import sys
 from image_loader import load_image

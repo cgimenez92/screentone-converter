@@ -1,3 +1,8 @@
+"""
+Genera patrones de screentone monocromáticos como arreglos numpy en escala de grises.
+Se utilizan para superponer texturas en las regiones de color detectadas.
+"""
+
 import numpy as np
 from PIL import Image, ImageDraw
 

@@ -1,3 +1,8 @@
+"""
+Define los rangos de color HSV para detectar tonos específicos en una imagen.
+Cada color se asocia a una tupla de (límite_inferior, límite_superior) en HSV.
+"""
+
 color_ranges = {
                 'red1':     [(0, 100, 100), (5, 255, 255)],
                 'red2':     [(175, 100, 100), (180, 255, 255)],

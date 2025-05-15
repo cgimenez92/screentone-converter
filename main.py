@@ -1,6 +1,6 @@
 import tkinter as tk
-from screentone_gui import run_screentone_app 
-from color_inspector_gui import run_color_inspector
+from screentone_gui import run_screentone_app
+#from color_inspector_gui import run_color_inspector
 
 def main_menu():
     root = tk.Tk()

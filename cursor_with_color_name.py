@@ -1,38 +1,21 @@
-"""
-Module Name: color_inspector.py
-
-Description:
-El modulo contiene la clase ColorInspectorApp, una app Tkinter
-que muestra el color debajo del cursor y su nombre. Permite al usuario seleccionar una imagen
-y ver el color debajo del cursor en tiempo real.
-
-Dependencies:
-- tkinter
-- numpy
-- webcolors
-- PIL (Pillow)
-"""
-
-
 import tkinter as tk
 import tkinter.font as tkFont
 import webcolors
 import numpy as np
 from PIL import Image, ImageDraw, ImageTk
 from typing import Tuple, Optional, List
-from image_loader import ImageLoader
+from image_loader import load_image
 
 class ColorInspectorApp:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Color Under Cursor")
-        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
 
         self.image: Optional[Image.Image] = None
         self.tk_image: Optional[ImageTk.PhotoImage] = None
         self.marked_points: List[Tuple[int, int, str]] = []
         
-        image_rgb, *_ = ImageLoader.load()
+        image_rgb, *_ = load_image()
         self.image = Image.fromarray(image_rgb)
         self.image_np = np.array(self.image)
         self.font = tkFont.Font(family="Helvetica", size=20)
@@ -100,12 +83,3 @@ class ColorInspectorApp:
         text_color = "black"
         draw.ellipse((x - 5, y - 5, x + 5, y + 5), outline=text_color, width=2)
         draw.text((x + 10, y - 10), text, fill=text_color, font=self.font)
-
-    def _on_close(self):
-        self.root.quit()
-        self.root.destroy()
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = ColorInspectorApp(root)
-    root.mainloop()

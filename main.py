@@ -1,8 +1,7 @@
 
 import tkinter as tk
-from screentone_gui import run_screentone_app 
-from color_inspector_gui import run_color_inspector
-from color_inspector import run_color_inspector_cv
+from screentone_gui import run_screentone_app
+from color_inspector import run_color_inspector
 
 def main_menu():
     root = tk.Tk()
@@ -19,10 +18,7 @@ def main_menu():
     tk.Button(root, text="1. Aplicar Screentone", font=("Helvetica", 14), width=30,
               command=run_screentone_app).pack(pady=10)
 
-    tk.Button(root, text="2. Inspeccionar Colores (Tkinter)", font=("Helvetica", 14), width=30,
-              command=run_color_inspector).pack(pady=10)
-
-    tk.Button(root, text="3. Inspeccionar Colores (OpenCV)", font=("Helvetica", 14), width=30,
+    tk.Button(root, text="2. Inspeccionar Colores", font=("Helvetica", 14), width=30,
               command=lambda: [root.withdraw(), run_color_inspector(), root.deiconify()]).pack(pady=10)
 
     tk.Button(root, text="Salir", font=("Helvetica", 14), width=30, command=on_close).pack(pady=20)

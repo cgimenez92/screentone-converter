@@ -1,51 +1,47 @@
-# color_inspector_cv.py
 import cv2
 import numpy as np
 import webcolors
 from image_loader import load_image
 
-def get_closest_color_name(rgb):
-    try:
-        return webcolors.rgb_to_name(rgb).capitalize()
-    except ValueError:
-        css3_rgb = {
-            name: webcolors.name_to_rgb(name)
-            for name in webcolors.names()
-        }
-        r1, g1, b1 = rgb
-        closest_name = min(
-            css3_rgb,
-            key=lambda name: (
-                (r1 - css3_rgb[name][0]) ** 2 +
-                (g1 - css3_rgb[name][1]) ** 2 +
-                (b1 - css3_rgb[name][2]) ** 2
-            )
-        )
-        return f"Closest: {closest_name.capitalize()}"
+def build_color_name_map(image_np):
+    height, width = image_np.shape[:2]
+    color_name_map = np.empty((height, width), dtype=object)
+
+    css3_names = list(webcolors.CSS3_NAMES_TO_HEX.keys())
+    css3_rgb = np.array([webcolors.hex_to_rgb(webcolors.CSS3_NAMES_TO_HEX[name]) for name in css3_names])
+
+    for y in range(height):
+        for x in range(width):
+            r1, g1, b1 = image_np[y, x]
+            deltas = ((css3_rgb - [r1, g1, b1]) ** 2).sum(axis=1)
+            closest_index = np.argmin(deltas)
+            color_name_map[y, x] = css3_names[closest_index].capitalize()
+
+    return color_name_map
 
 def run_color_inspector():
-    image_rgb, *_ = load_image()
-    image_np = np.array(image_rgb)
-    image_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
-    display_img = image_bgr.copy()
+    rgb_image, _ = load_image()
+    image_np = np.array(rgb_image)
+    display_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
+    original_bgr = display_bgr.copy()
+    
+    color_name_map = build_color_name_map(image_np)
 
-    def show_color_info(event, x, y, flags, param):
-        nonlocal display_img
-        if event == cv2.EVENT_MOUSEMOVE:
-            if 0 <= x < image_np.shape[1] and 0 <= y < image_np.shape[0]:
-                rgb = tuple(int(c) for c in image_np[y, x])
-                name = get_closest_color_name(rgb)
-                display_img = image_bgr.copy()
-                cv2.circle(display_img, (x, y), 5, (0, 0, 0), 2)
-                text = f"RGB({x}, {y}) = {rgb} → {name}"
-                cv2.putText(display_img, text, (x + 10, y - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2, cv2.LINE_AA)
+    def on_mouse(event, x, y, flags, param):
+        nonlocal display_bgr
+        if event == cv2.EVENT_MOUSEMOVE and 0 <= x < image_np.shape[1] and 0 <= y < image_np.shape[0]:
+            rgb = tuple(int(c) for c in image_np[y, x])
+            name = color_name_map[y, x]
+            display_bgr = original_bgr.copy()
+            cv2.circle(display_bgr, (x, y), 5, (0, 0, 0), 2)
+            cv2.putText(display_bgr, f"RGB: {rgb} → {name}", (x + 10, y - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
 
     cv2.namedWindow("Color Inspector")
-    cv2.setMouseCallback("Color Inspector", show_color_info)
+    cv2.setMouseCallback("Color Inspector", on_mouse)
 
     while True:
-        cv2.imshow("Color Inspector", display_img)
-        if cv2.waitKey(1) & 0xFF == 27:  # ESC
+        cv2.imshow("Color Inspector", display_bgr)
+        if cv2.waitKey(1) & 0xFF == 27:
             break
     cv2.destroyAllWindows()

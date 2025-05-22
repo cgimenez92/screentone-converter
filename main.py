@@ -1,10 +1,8 @@
-"""
-Menú principal con GUI para elegir entre aplicar screentone o inspeccionar colores.
-"""
 
 import tkinter as tk
 from screentone_gui import run_screentone_app 
 from color_inspector_gui import run_color_inspector
+from color_inspector import run_color_inspector_cv
 
 def main_menu():
     root = tk.Tk()
@@ -17,10 +15,16 @@ def main_menu():
     root.protocol("WM_DELETE_WINDOW", on_close)
 
     tk.Label(root, text="Seleccione una opción", font=("Helvetica", 16)).pack(pady=20)
+
     tk.Button(root, text="1. Aplicar Screentone", font=("Helvetica", 14), width=30,
               command=run_screentone_app).pack(pady=10)
-    tk.Button(root, text="2. Inspeccionar Colores", font=("Helvetica", 14), width=30,
+
+    tk.Button(root, text="2. Inspeccionar Colores (Tkinter)", font=("Helvetica", 14), width=30,
               command=run_color_inspector).pack(pady=10)
+
+    tk.Button(root, text="3. Inspeccionar Colores (OpenCV)", font=("Helvetica", 14), width=30,
+              command=lambda: [root.withdraw(), run_color_inspector(), root.deiconify()]).pack(pady=10)
+
     tk.Button(root, text="Salir", font=("Helvetica", 14), width=30, command=on_close).pack(pady=20)
 
     root.mainloop()

@@ -7,8 +7,8 @@ def build_color_name_map(image_np):
     height, width = image_np.shape[:2]
     color_name_map = np.empty((height, width), dtype=object)
 
-    css3_names = list(webcolors.CSS3_NAMES_TO_HEX.keys())
-    css3_rgb = np.array([webcolors.hex_to_rgb(webcolors.CSS3_NAMES_TO_HEX[name]) for name in css3_names])
+    css3_names = list(webcolors._definitions._CSS3_NAMES_TO_HEX.keys())
+    css3_rgb = np.array([webcolors.hex_to_rgb(webcolors._definitions._CSS3_NAMES_TO_HEX[name]) for name in css3_names])
 
     for y in range(height):
         for x in range(width):

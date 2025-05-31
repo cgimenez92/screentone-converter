@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import webcolors
-from image_loader import load_image
+from PIL import Image
 
 def build_color_name_map(image_np):
     height, width = image_np.shape[:2]
@@ -19,29 +19,30 @@ def build_color_name_map(image_np):
 
     return color_name_map
 
-def run_color_inspector():
-    rgb_image, _ = load_image()
-    image_np = np.array(rgb_image)
-    display_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
-    original_bgr = display_bgr.copy()
-    
+def inspect_colors(image: Image.Image):
+    image_np = np.array(image.convert("RGB"))
     color_name_map = build_color_name_map(image_np)
 
+    display_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
+    original_bgr = display_bgr.copy()
+
     def on_mouse(event, x, y, flags, param):
-        nonlocal display_bgr
-        if event == cv2.EVENT_MOUSEMOVE and 0 <= x < image_np.shape[1] and 0 <= y < image_np.shape[0]:
-            rgb = tuple(int(c) for c in image_np[y, x])
-            name = color_name_map[y, x]
-            display_bgr = original_bgr.copy()
-            cv2.circle(display_bgr, (x, y), 5, (0, 0, 0), 2)
-            cv2.putText(display_bgr, f"RGB: {rgb} → {name}", (x + 10, y - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+        if 0 <= x < image_np.shape[1] and 0 <= y < image_np.shape[0]:
+            if event == cv2.EVENT_MOUSEMOVE:
+                name = color_name_map[y, x]
+                display = original_bgr.copy()
+                cv2.circle(display, (x, y), 5, (0, 0, 0), 2)
+                cv2.putText(display, f"{name}", (x + 10, y - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2, cv2.LINE_AA)
+                cv2.imshow("Color Inspector", display)
 
     cv2.namedWindow("Color Inspector")
     cv2.setMouseCallback("Color Inspector", on_mouse)
-
+    cv2.imshow("Color Inspector", display_bgr)
     while True:
-        cv2.imshow("Color Inspector", display_bgr)
-        if cv2.waitKey(1) & 0xFF == 27:
+        if cv2.getWindowProperty("Color Inspector", cv2.WND_PROP_VISIBLE) < 1:
+            break
+        key = cv2.waitKey(1)
+        if key == 27: 
             break
     cv2.destroyAllWindows()

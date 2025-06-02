@@ -183,3 +183,8 @@ cython_debug/
 vscode/
 **.vscode/
 
+/outputs
+/uploads
+
+outputs
+uploads

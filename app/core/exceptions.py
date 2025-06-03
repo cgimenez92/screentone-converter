@@ -1,0 +1,24 @@
+"""Custom exceptions and handlers"""
+
+from fastapi import status
+
+
+class APIException(Exception):
+    """Base API exception"""
+    def __init__(self, message: str, status_code: int = 500, details: dict = None):
+        self.message = message
+        self.status_code = status_code
+        self.details = details or {}
+        super().__init__(self.message)
+
+
+class FileProcessingError(APIException):
+    """File processing related errors"""
+    def __init__(self, message: str, details: dict = None):
+        super().__init__(message, status.HTTP_422_UNPROCESSABLE_ENTITY, details)
+
+
+class ValidationError(APIException):
+    """Validation related errors"""
+    def __init__(self, message: str, details: dict = None):
+        super().__init__(message, status.HTTP_400_BAD_REQUEST, details)

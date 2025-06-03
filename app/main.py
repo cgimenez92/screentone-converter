@@ -1,41 +1,76 @@
-from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import FileResponse, JSONResponse
-import shutil
+"""
+Color Blindness Assistance API
+A FastAPI application providing screentone processing and color inspection services.
+"""
+
 import os
-import numpy as np
-import cv2
-from screentone_processor import ScreentoneProcessor
-from image_loader import load_image_from_path
-from color_inspector import inspect_colors 
-from PIL import Image
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.security import HTTPBearer
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+import uvicorn
 
-app = FastAPI()
+from app.config import get_settings
+from app.api.v1 import screentone, color_inspector
+from app.core.exceptions import APIException
 
-UPLOAD_DIR = "uploads"
-OUTPUT_DIR = "outputs"
+# Security
+security = HTTPBearer()
 
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan events"""
 
-@app.post("/apply_screentone/")
-async def apply_screentone(file: UploadFile = File(...)):
-    input_path = os.path.join(UPLOAD_DIR, file.filename)
-    with open(input_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    image = load_image_from_path(input_path)
-    processor = ScreentoneProcessor(image_shape=image.size)
-    rgb_image = np.array(image.convert("RGB"))
-    hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2HSV)
-    processed_image = processor.apply(hsv_image, rgb_image)
-    output_path = os.path.join(OUTPUT_DIR, f"screentone_{file.filename}")
-    Image.fromarray(processed_image).save(output_path)
-    return FileResponse(output_path, media_type="image/png", filename=f"screentone_{file.filename}")
+    settings = get_settings()
+    os.makedirs(settings.upload_dir, exist_ok=True)
+    os.makedirs(settings.output_dir, exist_ok=True)
+    yield
 
-@app.post("/inspect_colors/")
-async def inspect_colors_api(file: UploadFile = File(...)):
-    input_path = os.path.join(UPLOAD_DIR, file.filename)
-    with open(input_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    image = load_image_from_path(input_path)
-    result = inspect_colors(image)  # Esta función debe devolver un dict o lista serializable
-    return JSONResponse(content=result)
+
+def create_app() -> FastAPI:
+    """Application factory"""
+    settings = get_settings()
+    
+    app = FastAPI(
+                    title="Color Blindness Assistance API",
+                    description="API for screentone processing and color inspection to assist color blind users",
+                    version="1.0.0",
+                    docs_url="/docs" if settings.environment == "development" else None,
+                    redoc_url="/redoc" if settings.environment == "development" else None,
+                    lifespan=lifespan
+                )
+
+    # Middleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.allowed_origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST"],
+        allow_headers=["*"],
+    )
+    
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=settings.allowed_hosts
+    )
+
+    # Exception handlers
+    app.add_exception_handler(APIException)
+
+    # Routers
+    app.include_router(screentone.router, prefix="/api/v1/screentone", tags=["screentone"])
+    app.include_router(color_inspector.router, prefix="/api/v1/colors", tags=["colors"])
+
+    return app
+
+app = create_app()
+
+if __name__ == "__main__":
+    settings = get_settings()
+    uvicorn.run(
+                "app.main:app",
+                host=settings.host,
+                port=settings.port,
+                reload=settings.environment == "development"                
+                )

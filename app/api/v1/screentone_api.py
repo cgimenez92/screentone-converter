@@ -1,15 +1,13 @@
 """
 Screentone processing API endpoints
 """
-
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+from fastapi import APIRouter, UploadFile, File, Depends
 from fastapi.responses import FileResponse
 from PIL import Image
 import numpy as np
 import cv2
-import os
 import tempfile
-from typing import Optional
+import io
 
 from app.core.security import verify_api_key
 from app.core.exceptions import FileProcessingError, ValidationError

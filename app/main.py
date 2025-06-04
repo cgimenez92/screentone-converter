@@ -12,7 +12,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 import uvicorn
 
 from app.config import get_settings
-from app.api.v1 import screentone, color_inspector
+from app.api.v1 import screentone_api, color_inspector_api
 from app.core.exceptions import APIException
 
 # Security
@@ -59,8 +59,8 @@ def create_app() -> FastAPI:
     app.add_exception_handler(APIException)
 
     # Routers
-    app.include_router(screentone.router, prefix="/api/v1/screentone", tags=["screentone"])
-    app.include_router(color_inspector.router, prefix="/api/v1/colors", tags=["colors"])
+    app.include_router(screentone_api.router, prefix="/api/v1/screentone", tags=["screentone"])
+    app.include_router(color_inspector_api.router, prefix="/api/v1/colors", tags=["colors"])
 
     return app
 

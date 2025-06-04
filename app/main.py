@@ -13,7 +13,7 @@ import uvicorn
 
 from app.config import get_settings
 from app.api.v1 import screentone_api, color_inspector_api
-from app.core.exceptions import APIException
+from app.core.exceptions import APIException, api_exception_handler
 
 # Security
 security = HTTPBearer()
@@ -56,7 +56,7 @@ def create_app() -> FastAPI:
                     )
 
     # Exception handlers
-    app.add_exception_handler(APIException)
+    app.add_exception_handler(APIException, api_exception_handler)
 
     # Routers
     app.include_router(screentone_api.router, prefix="/api/v1/screentone", tags=["screentone"])

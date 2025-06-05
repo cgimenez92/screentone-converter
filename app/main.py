@@ -30,13 +30,13 @@ def create_app() -> FastAPI:
     settings = get_settings()
     
     app = FastAPI(
-        title="Color Blindness Assistance API",
-        description="API for screentone processing and color inspection to assist color blind users",
-        version="1.0.0",
-        docs_url="/docs" if settings.environment == "development" else None,
-        redoc_url="/redoc" if settings.environment == "development" else None,
-        lifespan=lifespan
-    )
+                    title="Color Blindness Assistance API",
+                    description="API for screentone processing and color inspection to assist color blind users",
+                    version="1.0.0",
+                    docs_url="/docs" if settings.environment == "development" else None,
+                    redoc_url="/redoc" if settings.environment == "development" else None,
+                    lifespan=lifespan
+                )
     
     # Middleware
     app.add_middleware(

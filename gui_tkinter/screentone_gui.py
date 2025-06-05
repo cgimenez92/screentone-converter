@@ -4,8 +4,8 @@ Ejecuta el flujo GUI del screentone: carga imagen, aplica patrones, muestra/guar
 
 import cv2
 import sys
-from image_loader import load_image
-from screentone_processor import ScreentoneProcessor
+from gui_tkinter.image_loader import load_image
+from app.services.screentone import ScreentoneProcessor
 
 def run_screentone_app():
     rgb_image, path = load_image()

@@ -3,8 +3,8 @@ Menú principal con GUI para elegir entre aplicar screentone o inspeccionar colo
 """
 
 import tkinter as tk
-from screentone_gui import run_screentone_app
-from color_inspector_gui import run_color_inspector
+from gui_tkinter.screentone_gui import run_screentone_app
+from gui_tkinter.color_inspector_gui import run_color_inspector
 
 class MainApplication:
     def __init__(self):

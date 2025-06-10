@@ -1,22 +1,31 @@
 import numpy as np
 import webcolors
+from functools import lru_cache
+from typing import Tuple
 
-""" def get_nearest_color_name(rgb_tuple):
+# Pre-compute CSS3 colors for faster lookups
+CSS3_NAMES = list(webcolors._definitions._CSS3_NAMES_TO_HEX.keys())
+CSS3_RGB = np.array([
+                        webcolors.hex_to_rgb(webcolors._definitions._CSS3_NAMES_TO_HEX[name]) 
+                        for name in CSS3_NAMES
+                    ])
+
+@lru_cache(maxsize=4096)  # Cache color name lookups
+def get_nearest_color_name(rgb_tuple: Tuple[int, int, int]) -> str:
+    """
+    Get the nearest CSS3 color name for an RGB tuple.
+    Uses caching to avoid repeated calculations for the same colors.
+    """
     try:
-        return webcolors.rgb_to_name(rgb_tuple)
+        return webcolors.rgb_to_name(rgb_tuple).capitalize()
     except ValueError:
-        # Find the closest match manually
-        min_colors = {}
-        for key, name in webcolors.CSS3_NAMES_TO_HEX.items():
-            r_c, g_c, b_c = webcolors.hex_to_rgb(name)
-            rd = (r_c - rgb_tuple[0]) ** 2
-            gd = (g_c - rgb_tuple[1]) ** 2
-            bd = (b_c - rgb_tuple[2]) ** 2
-            min_colors[(rd + gd + bd)] = key
-        return min_colors[min(min_colors.keys())] """
-
+        r, g, b = rgb_tuple
+        deltas = ((CSS3_RGB - [r, g, b]) ** 2).sum(axis=1)
+        closest_index = np.argmin(deltas)
+        return CSS3_NAMES[closest_index].capitalize()
+    
+"""     
 def build_color_name_map(image_np):
-    """Build color name mapping for the image - moved from services"""
     height, width = image_np.shape[:2]
     color_name_map = np.empty((height, width), dtype=object)
 
@@ -30,4 +39,4 @@ def build_color_name_map(image_np):
             closest_index = np.argmin(deltas)
             color_name_map[y, x] = css3_names[closest_index].capitalize()
 
-    return color_name_map
+    return color_name_map """

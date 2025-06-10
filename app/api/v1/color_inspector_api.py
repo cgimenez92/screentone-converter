@@ -6,7 +6,7 @@ from PIL import Image
 import numpy as np
 import io
 
-from app.services.color_inspector import build_color_name_map ##get_nearest_color_name
+from app.services.color_inspector import get_nearest_color_name
 from fastapi import APIRouter, UploadFile, File, Depends
 from app.core.security import verify_api_key
 from app.core.exceptions import FileProcessingError, ValidationError
@@ -16,12 +16,11 @@ router = APIRouter()
 
 @router.post("/inspect")
 async def inspect_colors(
-                            x: int,
-                            y: int,
-                            file: UploadFile = File(...),
-                            api_key: str = Depends(verify_api_key)
-                        ):
-    """Inspect color at specific coordinates"""
+    x: int,
+    y: int,
+    file: UploadFile = File(...),
+    api_key: str = Depends(verify_api_key)
+):
     settings = get_settings()
     
     # Validate file
@@ -38,22 +37,22 @@ async def inspect_colors(
         if not (0 <= x < image_np.shape[1] and 0 <= y < image_np.shape[0]):
             raise ValidationError("Coordinates out of bounds")
         
-        # Get color information
+        # Get color information for the specific pixel only
         r, g, b = image_np[y, x]
         
-        # Find closest color name
-        color_name_map = build_color_name_map(image_np)
-        color_name = color_name_map[y, x]
+        # Find closest color name for this single pixel
+        color_name = get_nearest_color_name((int(r), int(g), int(b)))
         
         return {
-                "coordinates": {"x": x, "y": y},
-                "rgb": {"r": int(r), "g": int(g), "b": int(b)},
-                "hex": f"#{r:02x}{g:02x}{b:02x}",
-                "color_name": color_name
-               }
+            "coordinates": {"x": x, "y": y},
+            "rgb": {"r": int(r), "g": int(g), "b": int(b)},
+            "hex": f"#{r:02x}{g:02x}{b:02x}",
+            "color_name": color_name
+        }
         
     except Exception as e:
         raise FileProcessingError(f"Failed to inspect color: {str(e)}")
+
 
 """ @router.post("/analyze")
 async def analyze_image_colors(

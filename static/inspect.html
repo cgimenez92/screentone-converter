@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Color Inspector</title>
+  <style>
+    img {
+      border: 1px solid #ccc;
+      cursor: crosshair;
+    }
+    #tooltip {
+      position: absolute;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      font-size: 12px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Upload Image</h2>
+  <input type="file" id="fileInput">
+  <br><br>
+  <img id="imagePreview" style="max-width: 100%;" />
+  <div id="tooltip"></div>
+
+  <script>
+    const img = document.getElementById('imagePreview');
+    const tooltip = document.getElementById('tooltip');
+    const fileInput = document.getElementById('fileInput');
+    let currentFile;
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) {
+        currentFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    img.addEventListener('mousemove', async (e) => {
+      if (!currentFile) return;
+
+      const rect = img.getBoundingClientRect();
+      const scaleX = img.naturalWidth / img.width;
+      const scaleY = img.naturalHeight / img.height;
+
+      const x = Math.floor((e.clientX - rect.left) * scaleX);
+      const y = Math.floor((e.clientY - rect.top) * scaleY);
+
+      const formData = new FormData();
+      formData.append("file", currentFile);
+      formData.append("x", x);
+      formData.append("y", y);
+
+      try {
+        const response = await fetch("/inspect?x=" + x + "&y=" + y, {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer YOUR_API_KEY"
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          tooltip.textContent = data.color_name + ` (${data.hex})`;
+          tooltip.style.left = e.pageX + 15 + "px";
+          tooltip.style.top = e.pageY + 15 + "px";
+          tooltip.style.display = "block";
+        } else {
+          tooltip.style.display = "none";
+        }
+      } catch (err) {
+        console.error("Failed to fetch color", err);
+      }
+    });
+
+    img.addEventListener('mouseleave', () => {
+      tooltip.style.display = "none";
+    });
+  </script>
+</body>
+</html>

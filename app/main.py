@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.security import HTTPBearer
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 
 from app.config import get_settings
@@ -59,6 +60,9 @@ def create_app() -> FastAPI:
     app.include_router(screentone_api.router, prefix="/api/v1/screentone", tags=["screentone"])
     app.include_router(color_inspector_api.router, prefix="/api/v1/colors", tags=["colors"])
     
+    # Static files
+    app.mount("/static", StaticFiles(directory=settings.static_dir), name="static")
+
     return app
 
 app = create_app()

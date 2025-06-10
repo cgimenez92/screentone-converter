@@ -6,7 +6,7 @@ from PIL import Image
 import numpy as np
 import io
 
-from app.services.color_inspector import build_color_name_map
+from app.services.color_inspector import build_color_name_map ##get_nearest_color_name
 from fastapi import APIRouter, UploadFile, File, Depends
 from app.core.security import verify_api_key
 from app.core.exceptions import FileProcessingError, ValidationError
@@ -55,12 +55,11 @@ async def inspect_colors(
     except Exception as e:
         raise FileProcessingError(f"Failed to inspect color: {str(e)}")
 
-@router.post("/analyze")
+""" @router.post("/analyze")
 async def analyze_image_colors(
                                 file: UploadFile = File(...),
                                 api_key: str = Depends(verify_api_key)
                                 ):
-    """Analyze dominant colors in image"""
     settings = get_settings()
     
     # Validate file
@@ -98,4 +97,4 @@ async def analyze_image_colors(
                 }
         
     except Exception as e:
-        raise FileProcessingError(f"Failed to analyze colors: {str(e)}")
+        raise FileProcessingError(f"Failed to analyze colors: {str(e)}") """

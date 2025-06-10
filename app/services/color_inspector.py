@@ -1,6 +1,19 @@
 import numpy as np
 import webcolors
 
+""" def get_nearest_color_name(rgb_tuple):
+    try:
+        return webcolors.rgb_to_name(rgb_tuple)
+    except ValueError:
+        # Find the closest match manually
+        min_colors = {}
+        for key, name in webcolors.CSS3_NAMES_TO_HEX.items():
+            r_c, g_c, b_c = webcolors.hex_to_rgb(name)
+            rd = (r_c - rgb_tuple[0]) ** 2
+            gd = (g_c - rgb_tuple[1]) ** 2
+            bd = (b_c - rgb_tuple[2]) ** 2
+            min_colors[(rd + gd + bd)] = key
+        return min_colors[min(min_colors.keys())] """
 
 def build_color_name_map(image_np):
     """Build color name mapping for the image - moved from services"""

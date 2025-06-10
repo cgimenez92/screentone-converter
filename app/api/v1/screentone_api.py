@@ -58,12 +58,3 @@ async def process_screentone(
             
     except Exception as e:
         raise FileProcessingError(f"Failed to process image: {str(e)}")
-
-@router.get("/patterns")
-async def list_patterns(api_key: str = Depends(verify_api_key)):
-        """List available screentone patterns"""
-        patterns = [
-                        'horizontal_stripes', 'vertical_stripes', 'grid', 'small_dots',
-                        'large_dots', 'double_diagonals', 'diagonal_stripes', 'zigzag', 'waves'
-                    ]
-        return {"patterns": patterns}

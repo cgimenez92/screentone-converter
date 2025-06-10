@@ -61,10 +61,10 @@
       formData.append("y", y);
 
       try {
-        const response = await fetch("/inspect?x=" + x + "&y=" + y, {
+        const response = await fetch("/api/v1/colors/inspect?x=" + x + "&y=" + y, {
           method: "POST",
           headers: {
-            "Authorization": "Bearer YOUR_API_KEY"
+            "Authorization": "Bearer YOUR_API_KEY" //Replace with your actual API key
           },
           body: formData
         });
